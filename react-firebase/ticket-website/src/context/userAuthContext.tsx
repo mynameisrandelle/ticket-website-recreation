@@ -1,6 +1,6 @@
 import { auth } from "@/firebaseConfig";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, User } from "firebase/auth";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface IUserAuthProviderProps {
     children: React.ReactNode;
@@ -47,7 +47,7 @@ export const UserAuthProvider: React.FunctionComponent<IUserAuthProviderProps> =
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log( "testing the watersss", user);
+                console.log( "testing the watersss ", user);
                 setUser(user);
             }
 
@@ -70,4 +70,8 @@ export const UserAuthProvider: React.FunctionComponent<IUserAuthProviderProps> =
     return (
         <userAuthContext.Provider value={value}>{children}</userAuthContext.Provider>
     );
+};
+
+export const useUserAuth = () => {
+    return useContext(userAuthContext);
 };
