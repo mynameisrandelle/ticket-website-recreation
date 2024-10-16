@@ -47,6 +47,7 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
     try {
       console.log("The user if is: ", userLogInInfo);
       await logIn(userLogInInfo.email, userLogInInfo.password);
+
       navigate("/");
     } catch (error) {
       console.log("Error: ", error);
@@ -116,7 +117,6 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
                   </span>
                 </div>
               </div>
-
             </CardContent>
 
             <CardFooter className="flex flex-col">
