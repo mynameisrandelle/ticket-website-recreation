@@ -11,11 +11,14 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUserAuth } from "@/context/userAuthContext";
+import { auth, db } from "@/firebaseConfig";
 import { UserRegister } from "@/types";
+import { doc, setDoc } from "firebase/firestore";
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const initialValue: UserRegister = {
+  username: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -47,6 +50,18 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
     try {
       console.log("The user if is: ", userInfo);
       await signUp(userInfo.email, userInfo.password);
+      const user = auth.currentUser;
+
+      console.log(user);
+
+      if (user) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          username: userInfo.username,
+          email: userInfo.email,
+        });
+      }
+
       navigate("/login");
     } catch (error) {
       console.log("Error: ", error);
@@ -70,6 +85,19 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
             </CardHeader>
 
             <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={userInfo.username}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setUserInfo({ ...userInfo, username: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
