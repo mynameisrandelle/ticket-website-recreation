@@ -75,7 +75,7 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="email@example.com"
                   value={userInfo.email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setUserInfo({ ...userInfo, email: e.target.value })
