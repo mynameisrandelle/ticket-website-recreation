@@ -6,7 +6,7 @@ import Register from './pages/register'
 import Home from './pages/home'
 import BillAddress from './pages/billAddress'
 import Receipt from './pages/receipt'
-import ProtectedRoutes from './components/ui/ProtectedRoutes'
+import ProtectedRoutes from './components/ProtectedRoutes'
 
 const router = createBrowserRouter([
 
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoutes />,
         children: [
             {
-                path: '/home',
+                path: '/',
                 element: <Home />,
                 errorElement: <Error />
             },
