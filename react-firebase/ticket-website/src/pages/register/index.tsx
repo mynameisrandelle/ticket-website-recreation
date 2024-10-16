@@ -15,7 +15,6 @@ import { UserRegister } from "@/types";
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
 const initialValue: UserRegister = {
   email: "",
   password: "",
@@ -29,6 +28,7 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = React.useState<UserRegister>(initialValue);
 
+  // this handles the google sign in feature
   const handleGoogleSignIn = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
 
@@ -53,94 +53,97 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
     }
   };
 
+  // the web design of register page
   return (
-    <div className="bg-slate-800 w-full h-screen">
-      <div className="flex items-center justify-center w-full h-full p-6">
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-          <Card>
-              <form onSubmit={handleSubmit}>
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl text-center mb-4">
-                    Create an account
-                  </CardTitle>
-                  <CardDescription>
-                    Enter your details below to create your account
-                  </CardDescription>
-                </CardHeader>
+    <div className="bg-slate-800 w-full h-screen flex flex-col justify-center items-center">
+      <div className="max-w-sm rounded-xl border bg-card text-card-foreground shadow-sm">
+        <Card>
+          <form onSubmit={handleSubmit}>
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl text-center mb-4">
+                Create an account
+              </CardTitle>
+              <CardDescription className="text-center">
+                Enter your details below to{" "}
+                <span className="font-bold">Create an account</span>
+              </CardDescription>
+            </CardHeader>
 
-                <CardContent className="grid gap-4">
-                  <div className="grid">
-                    <Button variant="outline" onClick={handleGoogleSignIn}>
-                      <Icons.google className="mr-2 h-4 w-4" />
-                      Google
-                    </Button>
-                  </div>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  value={userInfo.email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setUserInfo({ ...userInfo, email: e.target.value })
+                  }
+                />
+              </div>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
-                      </span>
-                    </div>
-                  </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={userInfo.password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setUserInfo({ ...userInfo, password: e.target.value })
+                  }
+                />
+              </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      value={userInfo.email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setUserInfo({ ...userInfo, email: e.target.value })
-                      }
-                    />
-                  </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Confirm Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={userInfo.confirmPassword}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setUserInfo({
+                      ...userInfo,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                />
+              </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={userInfo.password}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setUserInfo({ ...userInfo, password: e.target.value })
-                      }
-                    />
-                  </div>
+              <div className="grid">
+                <Button className="w-full" type="submit">
+                  Create account
+                </Button>
+              </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="password">Confirm Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={userInfo.confirmPassword}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setUserInfo({
-                          ...userInfo,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </CardContent>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+            </CardContent>
 
-                <CardFooter className="flex flex-col">
-                  <Button className="w-full" type="submit">
-                    Create account
-                  </Button>
+            <CardFooter className="flex flex-col">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleSignIn}
+              >
+                <Icons.google className="mr-2 h-4 w-4" />
+                Google
+              </Button>
 
-                  <p className="mt-3 text-sm text-center">
-                    Already have an account?{" "}
-                    <Link to="/login">Log In Account</Link>
-                  </p>
-                </CardFooter>
-              </form>
-            </Card>
-          </div>
+              <p className="mt-3 text-sm text-center">
+                Already have an account? <Link to="/login">Log In Account</Link>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
       </div>
     </div>
   );
