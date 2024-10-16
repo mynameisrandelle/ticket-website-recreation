@@ -47,7 +47,7 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
     try {
       console.log("The user if is: ", userInfo);
       await signUp(userInfo.email, userInfo.password);
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.log("Error: ", error);
     }
