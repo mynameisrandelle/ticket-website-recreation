@@ -1,9 +1,11 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/firebaseConfig";
+import { auth, db } from "@/firebaseConfig";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserAuth } from "@/context/userAuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 
 interface IHomeProps {}
@@ -13,6 +15,8 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
   const user = auth.currentUser;
   const navigate = useNavigate();
   const { logOut } = useUserAuth();
+
+  const [username, setUsername] = useState<string | null>(null);
 
   const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -24,6 +28,28 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
     }
   };
 
+  const getUsername = async () => {
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid); // Assuming you store users with uid as document id
+      const userDoc = await getDoc(userDocRef);
+  
+      if (userDoc.exists()) {
+        return userDoc.data()?.username || null; // Adjust 'username' based on your Firestore structure
+      }
+    }
+  
+    return user?.email || null;
+  };
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const fetchedUsername = await getUsername();
+      setUsername(fetchedUsername);
+    };
+  
+    fetchUsername();
+  }, [user]);
+
   return (
     <div className="container mx-auto py-3">
       <header>
@@ -33,7 +59,7 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
             {user ? (
               <>
                 <p className="mr-3 py-2 text-gray-800 inline-block">
-                  Hi {user.email}!
+                  Hi {username}!
                 </p>
                 <Button
                   onClick={handleLogout}
