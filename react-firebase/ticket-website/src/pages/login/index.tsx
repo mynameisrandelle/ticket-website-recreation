@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +15,6 @@ import { useUserAuth } from "@/context/userAuthContext";
 import { auth, db } from "@/firebaseConfig";
 import { UserLogIn } from "@/types";
 import { doc, setDoc } from "firebase/firestore";
-import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const initialValue: UserLogIn = {
@@ -24,7 +24,7 @@ const initialValue: UserLogIn = {
 
 interface ILoginProps {}
 
-const Login: React.FunctionComponent<ILoginProps> = (props) => {
+const Login: React.FunctionComponent<ILoginProps> = () => {
   const { googleSignIn, logIn } = useUserAuth();
   const navigate = useNavigate();
   const [userLogInInfo, setUserLogInInfo] =

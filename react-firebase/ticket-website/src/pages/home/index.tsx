@@ -1,16 +1,43 @@
 import * as React from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { auth, db } from "@/firebaseConfig";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserAuth } from "@/context/userAuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-
+import { useTicketContext } from "@/context/ticketContext";
 
 interface IHomeProps {}
 
 const Home: React.FunctionComponent<IHomeProps> = () => {
+  const { setSelectedTicket } = useTicketContext();
+
+  const tickets = [
+    {
+      title: "Standard Ticket",
+      price: 50,
+      details: ["Upper Box Seat", "1 Day Ticket"],
+    },
+    {
+      title: "Deluxe Ticket",
+      price: 125,
+      details: [
+        "Premium Box Seat",
+        "3 Days Ticket",
+        "Free Exclusive Merchandise",
+      ],
+    },
+    {
+      title: "V.I.P Ticket",
+      price: 225,
+      details: [
+        "V.I.P Room",
+        "3 Day Ticket",
+        "Free Exclusive Merchandise",
+        "Backstage Meet and Greet",
+      ],
+    },
+  ];
 
   const user = auth.currentUser;
   const navigate = useNavigate();
@@ -32,12 +59,12 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
     if (user) {
       const userDocRef = doc(db, "users", user.uid); // Assuming you store users with uid as document id
       const userDoc = await getDoc(userDocRef);
-  
+
       if (userDoc.exists()) {
         return userDoc.data()?.username || null; // Adjust 'username' based on your Firestore structure
       }
     }
-  
+
     return user?.email || null;
   };
 
@@ -46,7 +73,7 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
       const fetchedUsername = await getUsername();
       setUsername(fetchedUsername);
     };
-  
+
     fetchUsername();
   }, [user]);
 
@@ -54,7 +81,12 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
     <div className="container mx-auto py-3">
       <header>
         <div className="flex flex-col md:flex-row items-center pb-3 mb-4 border-b">
-          <Link to="/register" className="flex items-center text-gray-900 text-2xl font-semibold">Ticket Sales</Link>
+          <Link
+            to="/register"
+            className="flex items-center text-gray-900 text-2xl font-semibold"
+          >
+            Ticket Sales
+          </Link>
           <nav className="mt-2 md:mt-0 md:ml-auto">
             {user ? (
               <>
@@ -89,32 +121,7 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
 
       <main>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-          {[
-            {
-              title: "Standard Ticket",
-              price: 50,
-              details: ["Upper Box Seat", "1 Day Ticket"],
-            },
-            {
-              title: "Deluxe Ticket",
-              price: 125,
-              details: [
-                "Premium Box Seat",
-                "3 Days Ticket",
-                "Free Exclusive Merchandise",
-              ],
-            },
-            {
-              title: "V.I.P Ticket",
-              price: 225,
-              details: [
-                "V.I.P Room",
-                "3 Day Ticket",
-                "Free Exclusive Merchandise",
-                "Backstage Meet and Greet",
-              ],
-            },
-          ].map((ticket) => (
+          {tickets.map((ticket) => (
             <div key={ticket.title} className="border p-4 rounded-lg">
               <h4 className="text-lg font-normal">{ticket.title}</h4>
               <h1 className="text-2xl font-bold">${ticket.price}</h1>
@@ -124,8 +131,11 @@ const Home: React.FunctionComponent<IHomeProps> = () => {
                 ))}
               </ul>
               <Button
-                // onClick={() => handlePurchase(ticket.price, ticket.title)}
-                className="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 rounded"
+                onClick={() => {
+                  setSelectedTicket(ticket); // Set the selected ticket
+                  navigate("/billAddress"); // Redirect to the TicketDetails page
+                }}
+                className="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 rounded border hover:border-green-700"
               >
                 Buy
               </Button>
