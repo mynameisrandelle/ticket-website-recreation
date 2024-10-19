@@ -11,7 +11,9 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUserAuth } from "@/context/userAuthContext";
+import { auth, db } from "@/firebaseConfig";
 import { UserLogIn } from "@/types";
+import { doc, setDoc } from "firebase/firestore";
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -34,6 +36,16 @@ const Login: React.FunctionComponent<ILoginProps> = (props) => {
 
     try {
       await googleSignIn();
+      const user = auth.currentUser;
+
+      if (user) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          username: user.email,
+          email: user.email,
+        });
+      }
+
       navigate("/");
     } catch (error) {
       console.log("Error: ", error);

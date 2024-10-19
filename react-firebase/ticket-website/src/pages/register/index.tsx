@@ -31,12 +31,23 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = React.useState<UserRegister>(initialValue);
 
+
   // this handles the google sign in feature
   const handleGoogleSignIn = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
 
     try {
       await googleSignIn();
+      const user = auth.currentUser;
+
+      if (user) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          username: user.email,
+          email: user.email,
+        });
+      }
+
       navigate("/");
     } catch (error) {
       console.log("Error: ", error);
@@ -59,6 +70,7 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
           uid: user.uid,
           username: userInfo.username,
           email: userInfo.email,
+          password: userInfo.password,
         });
       }
 
