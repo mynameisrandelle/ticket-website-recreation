@@ -10,8 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
-
+import { useFormDataContext } from "@/context/receiptContext";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 
 
 interface IBillAddressProps {}
@@ -19,20 +22,17 @@ interface IBillAddressProps {}
 const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
   const { selectedTicket } = useTicketContext();
   const navigate = useNavigate();
+  const {formData, setFormData} = useFormDataContext();
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    address: "",
-    country: "",
-    state: "",
-    zip: "",
-    paymentMethod: "",
-    product: selectedTicket?.title,
-    price: selectedTicket?.price,
-    totalTickets: 1,
-  });
+  useEffect(() => {
+    if (selectedTicket) {
+      setFormData((prevData) => ({
+        ...prevData,
+        product: selectedTicket.title, // Assign selectedTicket.title to formData.product
+        price: selectedTicket.price,   // Assign selectedTicket.price to formData.price
+      }));
+    }
+  }, [selectedTicket, setFormData]);
 
   const radioHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, paymentMethod: event.target.value });
@@ -42,6 +42,31 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
   // Submit form data
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+      // Add the current date and time to the formData
+    const currentDateTime = new Date().toLocaleString(); // Get the current date and time
+
+    // Update formData with dateTime and totalPrice
+    setFormData((previousFormData) => {
+      const updatedFormData = {
+          ...previousFormData, // Spread the previous form data
+          dateTime: currentDateTime, // Add the current date and time
+          totalPrice: (previousFormData.price || 0) * (previousFormData.totalTickets || 0) // Calculate total price
+      };
+
+      // Save the updated formData to Firestore
+      addDoc(collection(db, "formDataCollection"), updatedFormData)
+          .then(() => {
+              console.log("Document successfully written!");
+              // navigate("/receipt"); // Uncomment to navigate
+          })
+          .catch((error) => {
+              console.error("Error adding document: ", error);
+          });
+
+      return updatedFormData; // Return the updated form data to update the state
+  });
+
+    navigate("/receipt");
     console.log(formData);
   };
 
@@ -69,6 +94,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setFormData({ ...formData, firstName: e.target.value })
                   }
+                  required
                 />
               </div>
               <div>
@@ -84,6 +110,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setFormData({ ...formData, lastName: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="col-span-2">
@@ -100,6 +127,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="col-span-2">
@@ -116,6 +144,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
+                  required
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 col-span-2">
@@ -130,6 +159,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                     onValueChange={(value) =>
                       setFormData({ ...formData, country: value })
                     }
+                    required
                   >
                     <SelectTrigger className="mt-1" id="country" name="country">
                       <SelectValue placeholder="Select a Country" />
@@ -149,6 +179,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                     onValueChange={(value) =>
                       setFormData({ ...formData, state: value })
                     }
+                    required
                   >
                     <SelectTrigger className="mt-1" id="state" name="state">
                       <SelectValue placeholder="Select a State" />
@@ -173,6 +204,7 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setFormData({ ...formData, zip: e.target.value })
                     }
+                    required
                   />
                 </div>
               </div>
@@ -276,14 +308,14 @@ const BillAddress: React.FunctionComponent<IBillAddressProps> = () => {
 
       <div className="grid grid-cols-3 gap-5 mt-5">
         <div className="col-span-2">
-          <button
+          <Button
             onClick={() => {
               navigate("/");
             }}
             className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 rounded"
           >
             Back to Dashboard
-          </button>
+          </Button>
         </div>
       </div>
     </div>
